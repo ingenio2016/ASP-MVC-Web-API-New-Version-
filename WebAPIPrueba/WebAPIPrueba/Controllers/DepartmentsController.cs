@@ -51,8 +51,25 @@ namespace WebAPIPrueba.Controllers
             if (ModelState.IsValid)
             {
                 db.Departments.Add(department);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                                        ex.InnerException.InnerException != null &&
+                                        ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with the same value");
+
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.ToString());
+                    }
+                }
             }
 
             return View(department);
@@ -83,8 +100,25 @@ namespace WebAPIPrueba.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(department).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                                                            ex.InnerException.InnerException != null &&
+                                                            ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with the same value");
+
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.ToString());
+                    }
+                }
             }
             return View(department);
         }
@@ -111,8 +145,26 @@ namespace WebAPIPrueba.Controllers
         {
             Department department = db.Departments.Find(id);
             db.Departments.Remove(department);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            try
+            {
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch(Exception ex)
+            {
+                if(ex.InnerException!=null &&
+                    ex.InnerException.InnerException!=null &&
+                    ex.InnerException.InnerException.Message.Contains("REFERENCE"))
+                {
+                    ModelState.AddModelError(string.Empty, "The record can't be deleted beacause it has related records");
+
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, ex.ToString());
+                }
+            }
+            return View(department);
         }
 
         protected override void Dispose(bool disposing)
