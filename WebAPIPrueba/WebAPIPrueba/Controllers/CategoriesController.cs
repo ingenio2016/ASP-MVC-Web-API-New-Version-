@@ -6,69 +6,75 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using WebAPIPrueba.Classes;
 using WebAPIPrueba.Models;
 
 namespace WebAPIPrueba.Controllers
 {
-    [Authorize(Roles = "Admin")]
-    public class CitiesController : Controller
+    [Authorize(Roles = "User")]
+    public class CategoriesController : Controller
     {
         private WebApiPruebaContext db = new WebApiPruebaContext();
+       
+           
 
-        // GET: Cities
+        // GET: Categories
         public ActionResult Index()
         {
-            var cities = db.Cities.Include(c => c.Department);
-            return View(cities.ToList());
+            var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            var categories = db.Categories.Where(x=>x.CompanyId==user.CompanyId);
+            return View(categories.ToList());
         }
 
-        // GET: Cities/Details/5
+        // GET: Categories/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            City city = db.Cities.Find(id);
-            if (city == null)
+            Category category = db.Categories.Find(id);
+            if (category == null)
             {
                 return HttpNotFound();
             }
-            return View(city);
+            return View(category);
         }
 
-        // GET: Cities/Create
+        // GET: Categories/Create
         public ActionResult Create()
         {
-            
-            ViewBag.DepartmentId = new SelectList(
-                CombosHelper.GetDepartments(), 
-                "DepartmentId", 
-                "Name");
-            return View();
+            var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            var category = new Category { CompanyId = user.CompanyId, };
+            return View(category);
         }
 
-        // POST: Cities/Create
+        // POST: Categories/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CityId,Name,DepartmentId")] City city)
+        public ActionResult Create(Category category)
         {
             if (ModelState.IsValid)
             {
-                db.Cities.Add(city);
+                db.Categories.Add(category);
                 try
                 {
                     db.SaveChanges();
-                    return RedirectToAction("Index");
                 }
                 catch (Exception ex)
                 {
                     if (ex.InnerException != null &&
-                                                            ex.InnerException.InnerException != null &&
-                                                            ex.InnerException.InnerException.Message.Contains("_Index"))
+                                                                                ex.InnerException.InnerException != null &&
+                                                                                ex.InnerException.InnerException.Message.Contains("_Index"))
                     {
                         ModelState.AddModelError(string.Empty, "There are a record with the same value");
 
@@ -78,56 +84,48 @@ namespace WebAPIPrueba.Controllers
                         ModelState.AddModelError(string.Empty, ex.ToString());
                     }
                 }
+                return RedirectToAction("Index");
             }
 
-            ViewBag.DepartmentId = new SelectList(
-                CombosHelper.GetDepartments(), 
-                "DepartmentId", 
-                "Name", 
-                city.DepartmentId);
-            return View(city);
+            ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", category.CompanyId);
+            return View(category);
         }
 
-        // GET: Cities/Edit/5
+        // GET: Categories/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            City city = db.Cities.Find(id);
-            if (city == null)
+            Category category = db.Categories.Find(id);
+            if (category == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.DepartmentId = new SelectList(
-                CombosHelper.GetDepartments(), 
-                "DepartmentId", 
-                "Name", 
-                city.DepartmentId);
-            return View(city);
+            
+            return View(category);
         }
 
-        // POST: Cities/Edit/5
+        // POST: Categories/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CityId,Name,DepartmentId")] City city)
+        public ActionResult Edit([Bind(Include = "CategoryId,Description,CompanyId")] Category category)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(city).State = EntityState.Modified;
+                db.Entry(category).State = EntityState.Modified;
                 try
                 {
                     db.SaveChanges();
-                    return RedirectToAction("Index");
                 }
                 catch (Exception ex)
                 {
                     if (ex.InnerException != null &&
-                                                            ex.InnerException.InnerException != null &&
-                                                            ex.InnerException.InnerException.Message.Contains("_Index"))
+                                                                                ex.InnerException.InnerException != null &&
+                                                                                ex.InnerException.InnerException.Message.Contains("_Index"))
                     {
                         ModelState.AddModelError(string.Empty, "There are a record with the same value");
 
@@ -137,37 +135,34 @@ namespace WebAPIPrueba.Controllers
                         ModelState.AddModelError(string.Empty, ex.ToString());
                     }
                 }
+                return RedirectToAction("Index");
             }
-            ViewBag.DepartmentId = new SelectList(
-                CombosHelper.GetDepartments(), 
-                "DepartmentId", 
-                "Name", 
-                city.DepartmentId);
-            return View(city);
+            ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", category.CompanyId);
+            return View(category);
         }
 
-        // GET: Cities/Delete/5
+        // GET: Categories/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            City city = db.Cities.Find(id);
-            if (city == null)
+            Category category = db.Categories.Find(id);
+            if (category == null)
             {
                 return HttpNotFound();
             }
-            return View(city);
+            return View(category);
         }
 
-        // POST: Cities/Delete/5
+        // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            City city = db.Cities.Find(id);
-            db.Cities.Remove(city);
+            Category category = db.Categories.Find(id);
+            db.Categories.Remove(category);
             try
             {
                 db.SaveChanges();
@@ -175,10 +170,10 @@ namespace WebAPIPrueba.Controllers
             catch (Exception ex)
             {
                 if (ex.InnerException != null &&
-                                    ex.InnerException.InnerException != null &&
-                                    ex.InnerException.InnerException.Message.Contains("REFERENCE"))
+                                                                            ex.InnerException.InnerException != null &&
+                                                                            ex.InnerException.InnerException.Message.Contains("_Index"))
                 {
-                    ModelState.AddModelError(string.Empty, "The record can't be deleted beacause it has related records");
+                    ModelState.AddModelError(string.Empty, "There are a record with the same value");
 
                 }
                 else

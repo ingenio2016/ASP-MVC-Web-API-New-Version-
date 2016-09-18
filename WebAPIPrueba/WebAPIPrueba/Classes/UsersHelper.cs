@@ -102,6 +102,32 @@ namespace WebAPIPrueba.Classes
             await MailHelper.SendMail(email, subject, body);
         }
 
+        public static bool DeleteUser(string UserName)
+        {
+            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+            var UserASP = userManager.FindByEmail(UserName);
+            if(UserASP == null)
+            {
+                return false;
+            }
+            var response = userManager.Delete(UserASP);
+            return response.Succeeded;
+        }
+
+        public static bool UpdateUserName(string CurrentUserName, string NewUsername)
+        {
+            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+            var UserASP = userManager.FindByEmail(CurrentUserName);
+            if (UserASP == null)
+            {
+                return false;
+            }
+            UserASP.UserName = NewUsername;
+            UserASP.Email = NewUsername;
+            var response = userManager.Update(UserASP);
+            return response.Succeeded;
+        }
+
         public void Dispose()
         {
             userContext.Dispose();

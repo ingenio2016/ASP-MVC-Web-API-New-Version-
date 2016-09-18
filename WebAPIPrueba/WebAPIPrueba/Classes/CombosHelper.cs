@@ -9,7 +9,7 @@ namespace WebAPIPrueba.Classes
     public class CombosHelper : IDisposable
     {
         private static WebApiPruebaContext db = new WebApiPruebaContext();
-
+        
         public static List<Department> GetDepartments()
         {
             var departments = db.Departments.ToList();
@@ -44,6 +44,30 @@ namespace WebAPIPrueba.Classes
 
             });
             return company.OrderBy(x => x.Name).ToList();
+        }
+
+        public static List<Category> GetCategories(int CompanyId)
+        {
+            var category = db.Categories.Where(x=> x.CompanyId == CompanyId).ToList();
+            category.Add(new Category
+            {
+                CategoryId = 0,
+                Description = "[Select a Category]",
+
+            });
+            return category.OrderBy(x => x.Description).ToList();
+        }
+
+        public static List<Tax> GetTaxes(int CompanyId)
+        {
+            var tax = db.Taxes.Where(x=> x.CompanyId == CompanyId).ToList();
+            tax.Add(new Tax
+            {
+                TaxId = 0,
+                Description = "[Select a Tax]",
+
+            });
+            return tax.OrderBy(x => x.Description).ToList();
         }
 
         public void Dispose()

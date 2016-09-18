@@ -30,14 +30,15 @@
             @Html.DisplayNameFor(model => model.FullName)
         </th>
         <th>
+            @Html.DisplayNameFor(model => model.Photo)
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.Phone)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Address)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Photo)
-        </th>
+        
         <th></th>
     </tr>
 
@@ -62,12 +63,6 @@
             @Html.DisplayFor(modelItem => item.FullName)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Phone)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Address)
-        </td>
-        <td>
             @if (!string.IsNullOrEmpty(item.Photo))
             {
                 <img src="@Url.Content(item.Photo)" alt="Image" style="width:100px;height:100px;max-width: 100%; height: auto;" />
@@ -78,8 +73,15 @@
             }
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.UserId }, new { @class = "btn btn-warning" })
-            @Html.ActionLink("Details", "Details", new { id=item.UserId }, new { @class = "btn btn-info" })
+            @Html.DisplayFor(modelItem => item.Phone)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Address)
+        </td>
+        
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.UserId }, new { @class = "btn btn-warning" }) |
+            @Html.ActionLink("Details", "Details", new { id=item.UserId }, new { @class = "btn btn-info" }) |
             @Html.ActionLink("Delete", "Delete", new { id=item.UserId }, new { @class = "btn btn-danger" })
         </td>
     </tr>

@@ -9,6 +9,7 @@ using WebAPIPrueba.Models;
 
 namespace WebAPIPrueba.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CompaniesController : Controller
     {
         private WebApiPruebaContext db = new WebApiPruebaContext();
@@ -208,7 +209,24 @@ namespace WebAPIPrueba.Controllers
         {
             Company company = db.Companies.Find(id);
             db.Companies.Remove(company);
-            db.SaveChanges();
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null &&
+                                    ex.InnerException.InnerException != null &&
+                                    ex.InnerException.InnerException.Message.Contains("REFERENCE"))
+                {
+                    ModelState.AddModelError(string.Empty, "The record can't be deleted beacause it has related records");
+
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, ex.ToString());
+                }
+            }
             return RedirectToAction("Index");
         }
 

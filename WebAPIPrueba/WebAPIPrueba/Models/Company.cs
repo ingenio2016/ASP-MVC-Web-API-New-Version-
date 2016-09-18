@@ -30,6 +30,9 @@ namespace WebAPIPrueba.Models
         [DataType(DataType.ImageUrl)]
         public string Logo { get; set; }
 
+        [NotMapped]
+        public HttpPostedFileBase LogoFile { get; set; }
+
         [Required(ErrorMessage = "The field {0} is required")]
         [Range(1, double.MaxValue, ErrorMessage = "You must be select a {0}")]
         [Display(Name = "Department")]
@@ -40,14 +43,19 @@ namespace WebAPIPrueba.Models
         [Display(Name = "City")]
         public int CityId { get; set; }
 
-        [NotMapped]
-        public HttpPostedFileBase LogoFile { get; set; }
+        
 
         public virtual Department Department { get; set; }
 
         public virtual City City { get; set; }
 
         public virtual ICollection<User> Users { get; set; }
+
+        public virtual ICollection<Category> Categories { get; set; }
+
+        public virtual ICollection<Tax> Taxes { get; set; }
+
+        public virtual ICollection<Product> Products { get; set; }
 
 
     }

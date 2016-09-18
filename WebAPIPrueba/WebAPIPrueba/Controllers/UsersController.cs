@@ -8,6 +8,7 @@ using WebAPIPrueba.Models;
 
 namespace WebAPIPrueba.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private WebApiPruebaContext db = new WebApiPruebaContext();
@@ -176,6 +177,14 @@ namespace WebAPIPrueba.Controllers
                     }
                 }
 
+                var db2 = new WebApiPruebaContext();
+                var currentUser = db2.Users.Find(user.UserId);
+
+                if(currentUser.UserName != user.UserName)
+                {
+                    UsersHelper.UpdateUserName(currentUser.UserName, user.UserName);
+                }
+
                 db.Entry(user).State = EntityState.Modified;
                 try
                 {
@@ -239,7 +248,25 @@ namespace WebAPIPrueba.Controllers
         {
             User user = db.Users.Find(id);
             db.Users.Remove(user);
-            db.SaveChanges();
+            try
+            {
+                db.SaveChanges();
+                UsersHelper.DeleteUser(user.UserName);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null &&
+                                                                                                ex.InnerException.InnerException != null &&
+                                                                                                ex.InnerException.InnerException.Message.Contains("_Index"))
+                {
+                    ModelState.AddModelError(string.Empty, "There are a record with the same value");
+
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, ex.ToString());
+                }
+            }
             return RedirectToAction("Index");
         }
 

@@ -27,5 +27,11 @@ namespace WebAPIPrueba.Models
         public System.Data.Entity.DbSet<WebAPIPrueba.Models.Company> Companies { get; set; }
 
         public System.Data.Entity.DbSet<WebAPIPrueba.Models.User> Users { get; set; }
+
+        public System.Data.Entity.DbSet<WebAPIPrueba.Models.Category> Categories { get; set; }
+
+        public System.Data.Entity.DbSet<WebAPIPrueba.Models.Tax> Taxes { get; set; }
+
+        public System.Data.Entity.DbSet<WebAPIPrueba.Models.Product> Products { get; set; }
     }
 }

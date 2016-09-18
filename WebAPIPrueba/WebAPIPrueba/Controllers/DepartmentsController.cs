@@ -10,6 +10,7 @@ using WebAPIPrueba.Models;
 
 namespace WebAPIPrueba.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class DepartmentsController : Controller
     {
         private WebApiPruebaContext db = new WebApiPruebaContext();
